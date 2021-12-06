@@ -37,6 +37,7 @@
 		id : '',
 		name : '',
 		score : 0,
+		gamesWon : 0,
 		saveForFuture : false
 	}
 
@@ -88,8 +89,6 @@
 		navigateTo('ADD_PLAYER_SCREEN');		
     }
 
-	
-
 	const addNewPLayer = () => {
 		togglePopup('NEW_PLAYER');
 	}
@@ -122,6 +121,7 @@
 			}
 			delete newPlayer.saveForFuture;
 			newPlayer.score = 0;
+			newPlayer.gamesWon = 0;
 			currentGame.players.push(JSON.parse(JSON.stringify(newPlayer)));
 			currentGame = currentGame;
 			state.games = state.games.filter(game => game.id !== currentGame.id);
@@ -133,6 +133,7 @@
 				id : '',
 				name : '',
 				score : 0,
+				gamesWon : 0,
 				saveForFuture : false
 			}
 		}
@@ -151,6 +152,7 @@
 		for(let existingPlayer of existingPlayerSelected){
 			let player = JSON.parse(JSON.stringify(existingPlayer));
 			player.score = 0;
+			player.gamesWon = 0;
 			currentGame.players.push(player);
 		}
 		existingPlayerSelected = [];
@@ -204,11 +206,14 @@
 		}
 
 		for(let player_id in newRound){
+			if(Number(newRound[player_id]) == 0){
+				currentGame.players.filter(player => player.id === player_id)[0].gamesWon += 1;	
+			}
 			currentGame.players.filter(player => player.id === player_id)[0].score += Number(newRound[player_id]);
 		}
 
 		currentGame.players.sort(function(first,second){ return first.score - second.score});
-
+		
 		currentGame.rounds.push(JSON.parse(JSON.stringify(newRound)));
 
 		currentGame = currentGame;
