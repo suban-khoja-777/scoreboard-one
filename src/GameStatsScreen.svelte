@@ -27,7 +27,11 @@ export let goToRoundDetailScreen;
             <li>
                 <div>
                     <span class="index"> {index+1}. </span> 
-                    <span>{player.name}</span> 
+                    <span>
+                        <span class="index">&nbsp;[&nbsp;{player.gamesWon}&nbsp;]</span>
+                        {player.name}
+                    </span> 
+                    
                 </div>
                 <div class="score">
                     <Icon text={player.score} />
