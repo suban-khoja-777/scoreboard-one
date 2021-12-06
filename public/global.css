@@ -46,6 +46,17 @@ ul{
 	margin: 0 auto 1em auto;
 }
 
+ul.round-list-container{
+	width: 90%;
+	overflow-y: auto;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	margin: 0 auto 1em auto;
+	max-height: 66vh;
+	height: 66vh;
+}
+
 header{
 	background-color: var(--white-color); 
 	padding: 15px 5px;
@@ -128,3 +139,9 @@ main.footer{
 	flex-direction: row;
 	justify-content: space-evenly;
 }
+
+
+
+
+
+
