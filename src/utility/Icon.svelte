@@ -7,8 +7,12 @@
         color: var(--white-color);
     }
 
-    button.icon{
+    button.primary{
         background: var(--primary-color);
+    }
+
+    button.secondary{
+        background-color: #27c26c;
     }
     
 </style>
@@ -17,8 +21,9 @@
 <script>
     export let text;
     export let OnClick;
+    export let type = "primary";
 </script>
 
 <main>
-    <button on:click={OnClick} class="icon">{text}</button>
+    <button on:click={OnClick} class={type}>{text}</button>
 </main>
