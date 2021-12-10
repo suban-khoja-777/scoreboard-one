@@ -9,7 +9,9 @@ export let rounds = [];
 export let addNewRound;
 export let completeGame;
 export let goToRoundDetailScreen;
+export let totalRounds = 0;
 </script>
+
 
 <main>
     <main class="row">
@@ -18,7 +20,13 @@ export let goToRoundDetailScreen;
 
     <main class="row">
         {#if rounds.length}
+            <Button text={"Players : "+players.length} type="primary"/>
             <Button text="Show Rounds" type="secondary" onClick={goToRoundDetailScreen} />
+            <Button text={"Rounds : "+rounds.length} type="primary" />
+            {#if totalRounds}
+                <main>/</main>
+                <Icon text={totalRounds} />    
+            {/if}
         {/if}
     </main>
     <br/>
@@ -26,11 +34,12 @@ export let goToRoundDetailScreen;
         {#each players as player , index}
             <li>
                 <div>
-                    <span class="index"> {index+1}. </span> 
-                    <span>
-                        <span class="index">&nbsp;[&nbsp;{player.gamesWon}&nbsp;]</span>
-                        {player.name}
-                    </span> 
+                    <main class="row">    
+                        <Icon type="secondary" text={player.gamesWon} />
+                        <span>
+                            {player.name}
+                        </span>
+                    </main> 
                     
                 </div>
                 <div class="score">
