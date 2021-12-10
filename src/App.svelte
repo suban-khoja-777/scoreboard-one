@@ -212,7 +212,13 @@
 			currentGame.players.filter(player => player.id === player_id)[0].score += Number(newRound[player_id]);
 		}
 
-		currentGame.players.sort(function(first,second){ return first.score - second.score});
+		currentGame.players.sort(function(first,second){ 
+			if(first.score !== second.score){
+				return first.score - second.score;
+			}else{
+				return second.gamesWon - first.gamesWon;
+			}
+		});
 		
 		currentGame.rounds.push(JSON.parse(JSON.stringify(newRound)));
 
@@ -225,13 +231,22 @@
 	}
 
 	const cancelNewRound = () => {
+		if(Object.keys(newRound).length){
+			const sure = window.confirm('Are you sure?');
+			if(!sure) return;
+		}
 		newRound = {};
 		togglePopup('ADD_ROUND');
 	}
 
 	const updatePlayerScore = (event) => {
+		const wonPlayerList = Object.values(newRound).filter(round => round == 0);
+		if(wonPlayerList.length && event.target.value == 0){
+			alert("Only 1 player can have 0 points");
+			event.target.value = null;
+		}
 		if(event.target.value || !isNaN(event.target.value)){
-			newRound[event.target.name] = event.target.value;
+			newRound[event.target.name] = Number(event.target.value);
 		}else{
 			delete newRound[event.target.name];
 		}
@@ -239,6 +254,8 @@
 	}
 
 	const completeGame = () => {
+		const sure = window.confirm('Are you sure?');
+		if(!sure) return;
 		currentGame.state = 'Completed';
 		currentGame = currentGame;
 		state.games = state.games.filter(game => game.id !== currentGame.id);
