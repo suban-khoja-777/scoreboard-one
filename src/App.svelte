@@ -240,11 +240,11 @@
 	}
 
 	const updatePlayerScore = (event) => {
-		const wonPlayerList = Object.values(newRound).filter(round => round == 0);
-		if(wonPlayerList.length && event.target.value == 0){
-			alert("Only 1 player can have 0 points");
-			event.target.value = null;
-		}
+		// const wonPlayerList = Object.values(newRound).filter(round => round == 0);
+		// if(wonPlayerList.length && Number(event.target.value) === 0){
+		// 	alert("Only 1 player can have 0 points");
+		// 	event.target.value = null;
+		// }
 		if(event.target.value || !isNaN(event.target.value)){
 			newRound[event.target.name] = Number(event.target.value);
 		}else{
