@@ -2,7 +2,7 @@
     import Button from "./utility/Button.svelte";
 
     export let onNewGame;
-    export let onClear;
+    // export let onClear;
 </script>
 <main>
   
@@ -12,7 +12,7 @@
     </div>
     
     <main class="row">
-        <Button onClick={onClear} text="Clear Data" type="secondary" />
+        <!--<Button onClick={onClear} text="Clear Data" type="secondary" />-->
         <Button onClick={onNewGame} text="New Game" type="primary" />
     </main>
 </main>
