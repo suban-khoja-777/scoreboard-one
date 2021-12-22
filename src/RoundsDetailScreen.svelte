@@ -22,7 +22,7 @@ export let openRoundDetail;
     </main>
     
     <main class="footer">
-        <Button text="Previous" type="secondary" onClick={goToGameScreen} />
+        <Button text="Previous" type="secondary" onClick={() => goToGameScreen(false)} />
     </main>
     
 </main>
