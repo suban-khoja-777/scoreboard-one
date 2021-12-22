@@ -3,13 +3,13 @@
 import Button from "./utility/Button.svelte";
 import Icon from "./utility/Icon.svelte";
 
-export let players = [];
+export let game;
 export let goToAddPlayerScreen;
-export let rounds = [];
 export let addNewRound;
 export let completeGame;
 export let goToRoundDetailScreen;
 export let totalRounds = 0;
+export let showPreviousGames;
 </script>
 
 
@@ -19,10 +19,10 @@ export let totalRounds = 0;
     </main>
 
     <main class="row">
-        {#if rounds.length}
-            <Button text={"Players : "+players.length} type="primary"/>
+        {#if game.rounds.length}
+            <Button text={"Players : "+game.players.length} type="primary"/>
             <Button text="Show Rounds" type="secondary" onClick={goToRoundDetailScreen} />
-            <Button text={"Rounds : "+rounds.length} type="primary" />
+            <Button text={"Rounds : "+game.rounds.length} type="primary" />
             {#if totalRounds}
                 <main>/</main>
                 <Icon text={totalRounds} />    
@@ -31,7 +31,7 @@ export let totalRounds = 0;
     </main>
     <br/>
     <ul>
-        {#each players as player , index}
+        {#each game.players as player}
             <li>
                 <div>
                     <main class="row">    
@@ -50,12 +50,17 @@ export let totalRounds = 0;
     </ul>
     
     <main class="footer">
-        {#if !rounds.length}
-            <Button text="Previous" type="secondary" onClick={goToAddPlayerScreen} />
+        {#if game.state === 'In Progress' || game.state === 'Preparing'}
+            <Button text="Add Round" type="primary" onClick={addNewRound} />
+            {#if game.rounds.length}
+                <Button text="Complete" type="primary" onClick={completeGame} />
+                {:else}       
+                    <Button text="Previous" type="secondary" onClick={goToAddPlayerScreen} />
+            {/if}
             {:else}
-            <Button text="Complete" type="primary" onClick={completeGame} />
+                <Button text="Previous" type="secondary" onClick={showPreviousGames} />  
+        
         {/if}
-        <Button text="Add Round" type="primary" onClick={addNewRound} /> 
     </main>
     
 </main>
