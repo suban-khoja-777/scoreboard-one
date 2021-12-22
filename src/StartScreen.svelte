@@ -2,7 +2,9 @@
     import Button from "./utility/Button.svelte";
 
     export let onNewGame;
-    // export let onClear;
+    export let showPreviousGames;
+    export let showHistory = false;
+    export let clearGameHistory;
 </script>
 <main>
   
@@ -13,7 +15,16 @@
     
     <main class="row">
         <!--<Button onClick={onClear} text="Clear Data" type="secondary" />-->
+        {#if showHistory}
+            <Button onClick={showPreviousGames} text="History" type="secondary" />
+        {/if}
         <Button onClick={onNewGame} text="New Game" type="primary" />
+    </main>
+
+     <main class="row">
+        {#if showHistory}
+            <a href="/#" class="link" on:click={clearGameHistory}>Clear History</a>
+        {/if}
     </main>
 </main>
 
@@ -28,7 +39,6 @@
 
     img.card{
         width: 200px;
-        box-shadow: rgb(0 0 0 / 8%) 0px 0.7rem 2.5rem;
     }
 
 </style>
