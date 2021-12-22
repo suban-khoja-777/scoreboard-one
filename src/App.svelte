@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 
-	import {generatePlayerId , generateGameId} from './utility/Utility';
+	import {generatePlayerId , generateGameId , getDateTimeAsString,generateRoundId} from './utility/Utility';
 
 	import Popup from './utility/Popup.svelte';
 	import Icon from "./utility/Icon.svelte";
@@ -11,6 +11,7 @@
 	import AddPlayerScreen from './AddPlayerScreen.svelte';
 	import GameStatsScreen from './GameStatsScreen.svelte';
 	import RoundsDetailScreen from './RoundsDetailScreen.svelte';
+	import PreviousGamesLists from './PreviousGamesLists.svelte';
 
 	const APP_NAME = 'SCOREBOARD_APP';
 
@@ -30,7 +31,8 @@
 		HOME_SCREEN : false,
 		ADD_PLAYER_SCREEN : false,
 		GAME_STAT_SCREEN : false,
-		ROUND_DETAIL_SCREEN : false
+		ROUND_DETAIL_SCREEN : false,
+		PREVIOUS_GAMES_SCREEN : false
 	}
 
 	let newPlayer = {
@@ -45,9 +47,17 @@
 
 	let currentGame;
 
-	let newRound = {};
+	let newRound = {
+		id : "",
+		scores : {
+
+		}
+	};
 
 	let selectedRoundForDetail = {};
+	let backupOfExistingRound = {};
+	let roundSaveLabel = "Edit";
+	let isEditingRound = false;
 
 	onMount(() => {
 		
@@ -78,6 +88,7 @@
 	const startNewGame = () => {
         let new_game = {
 			id : generateGameId(),
+			date_time : getDateTimeAsString(),
             state : 'Preparing',
             players : [],
             rounds : []
@@ -115,11 +126,14 @@
 
 		if(newPlayer.name){
 			newPlayer.id = generatePlayerId();
+			
 			if(newPlayer.saveForFuture){
 				delete newPlayer.score;
+				delete newPlayer.gamesWon;
 				state.players.push(JSON.parse(JSON.stringify(newPlayer)));
 			}
 			delete newPlayer.saveForFuture;
+			
 			newPlayer.score = 0;
 			newPlayer.gamesWon = 0;
 			currentGame.players.push(JSON.parse(JSON.stringify(newPlayer)));
@@ -173,14 +187,14 @@
 		existingPlayerSelected = existingPlayerSelected;
 	}
 
-	const goToGameScreen = () => {
-		currentGame.state = 'In Progress';
+	const goToGameScreen = (changeState) => {
+		if(changeState)
+			currentGame.state = 'In Progress';
 		currentGame = currentGame;
 		state.games = state.games.filter(game => game.id !== currentGame.id);
 		state.games.push(currentGame);
 		state = state;
 		updateDb();
-		
 		navigateTo('GAME_STAT_SCREEN');
 	}
 
@@ -200,16 +214,16 @@
 
 	const saveNewRound = () => {
 
-		if(Object.keys(newRound).length !== currentGame.players.length){
+		if(Object.keys(newRound.scores).length !== currentGame.players.length){
 			alert('Please add score for All Players');
 			return;
 		}
-
-		for(let player_id in newRound){
-			if(Number(newRound[player_id]) == 0){
+		newRound.id = generateRoundId();
+		for(let player_id in newRound.scores){
+			if(Number(newRound.scores[player_id]) == 0){
 				currentGame.players.filter(player => player.id === player_id)[0].gamesWon += 1;	
 			}
-			currentGame.players.filter(player => player.id === player_id)[0].score += Number(newRound[player_id]);
+			currentGame.players.filter(player => player.id === player_id)[0].score += Number(newRound.scores[player_id]);
 		}
 
 		currentGame.players.sort(function(first,second){ 
@@ -231,11 +245,14 @@
 	}
 
 	const cancelNewRound = () => {
-		if(Object.keys(newRound).length){
+		if(Object.keys(newRound.scores).length){
 			const sure = window.confirm('Are you sure?');
 			if(!sure) return;
 		}
-		newRound = {};
+		newRound = {
+			id : "",
+			scores : {}
+		};
 		togglePopup('ADD_ROUND');
 	}
 
@@ -246,9 +263,9 @@
 		// 	event.target.value = null;
 		// }
 		if(event.target.value || !isNaN(event.target.value)){
-			newRound[event.target.name] = Number(event.target.value);
+			newRound.scores[event.target.name] = Number(event.target.value);
 		}else{
-			delete newRound[event.target.name];
+			delete newRound.scores[event.target.name];
 		}
 			
 	}
@@ -275,6 +292,9 @@
 	}
 
 	const closeRoundDetail = () =>{
+		isEditingRound = false;
+		roundSaveLabel = "Edit";
+		backupOfExistingRound = {};
 		togglePopup('ROUND_DETAIL_POPUP',false);
 	}
 
@@ -306,13 +326,102 @@
 		};
 	}
 
+	const showPreviousGames = () => {
+		navigateTo('PREVIOUS_GAMES_SCREEN');
+	}
+
+	const goToHomeScreen = () => {
+		navigateTo('HOME_SCREEN');
+	}
+
+	const openGameDetail = (gameToOpen) => {
+		currentGame = gameToOpen;
+		navigateTo('GAME_STAT_SCREEN');
+		console.log('gameToOpen',gameToOpen);
+	}
+
+	const editExistingRound = () => {
+		if(isEditingRound){
+			if(Object.keys(selectedRoundForDetail.scores).length !== currentGame.players.length){
+				alert('Please add score for All Players');
+				return;
+			}
+			
+			let round_index = currentGame.rounds.findIndex(round => round.id === selectedRoundForDetail.id);
+			console.log('round_index',round_index);
+
+			let previous_won_player_id;
+			let new_won_player_id;
+
+			for(let player_id in selectedRoundForDetail.scores){
+				if(Number(selectedRoundForDetail.scores[player_id]) == 0){
+					new_won_player_id = player_id;
+				}
+			}
+
+			for(let player_id in backupOfExistingRound.scores){
+				if(Number(backupOfExistingRound.scores[player_id]) == 0){
+					previous_won_player_id = player_id;
+				}
+			}
+
+			if(new_won_player_id != previous_won_player_id){
+				currentGame.players.filter(player => player.id === new_won_player_id)[0].gamesWon += 1;
+				currentGame.players.filter(player => player.id === previous_won_player_id)[0].gamesWon -= 1;	
+			}
+
+			for(let player_id in selectedRoundForDetail.scores){
+				currentGame.players.filter(player => player.id === player_id)[0].score += Number(selectedRoundForDetail.scores[player_id]);
+				currentGame.players.filter(player => player.id === player_id)[0].score -= Number(backupOfExistingRound.scores[player_id]);
+			}
+
+			currentGame.players.sort(function(first,second){ 
+				if(first.score !== second.score){
+					return first.score - second.score;
+				}else{
+					return second.gamesWon - first.gamesWon;
+				}
+			});
+			
+			currentGame.rounds = [...currentGame.rounds.slice(0,round_index), selectedRoundForDetail ,...currentGame.rounds.slice(round_index + 1,currentGame.rounds.length)];
+
+			currentGame = currentGame;
+			state.games = state.games.filter(game => game.id !== currentGame.id);
+			state.games.push(currentGame);
+			
+			updateDb();
+			togglePopup('ROUND_DETAIL_POPUP');
+			isEditingRound = false;
+			roundSaveLabel = "Edit";
+		}else{
+			backupOfExistingRound = JSON.parse(JSON.stringify(selectedRoundForDetail));
+			isEditingRound = true;
+			roundSaveLabel = "Save";
+		}
+	}
+
+	const clearGameHistory = () => {
+		const sure = window.confirm('Are you sure?');
+		if(!sure) return;
+		state.games = [];
+		updateDb();
+	}
+
+	const updatePlayerExistingScore = (event) => {
+		if(event.target.value || !isNaN(event.target.value)){
+			selectedRoundForDetail.scores[event.target.name] = Number(event.target.value);
+		}else{
+			delete selectedRoundForDetail.scores[event.target.name];
+		}
+	}
+
 </script>
 
 <main>
 	<header>Scoreboard</header>
 	
 	{#if SCREEN.HOME_SCREEN }
-		<StartScreen onNewGame={startNewGame} onClear={clearAppData}/>
+		<StartScreen onNewGame={startNewGame} {showPreviousGames} showHistory={state.games.length} {clearGameHistory}/>
 	{/if}
 
 	{#if SCREEN.ADD_PLAYER_SCREEN }
@@ -320,13 +429,17 @@
 	{/if}
 
 	{#if SCREEN.GAME_STAT_SCREEN}
-		<GameStatsScreen rounds={currentGame.rounds} players={currentGame.players} {goToAddPlayerScreen} {addNewRound} {completeGame} {goToRoundDetailScreen}/>
+		<GameStatsScreen game={currentGame} {goToAddPlayerScreen} {showPreviousGames} {addNewRound} {completeGame} {goToRoundDetailScreen}/>
 	{/if}
 
 	{#if SCREEN.ROUND_DETAIL_SCREEN}
 		<RoundsDetailScreen rounds={currentGame.rounds} players={currentGame.players} {goToGameScreen} {openRoundDetail}/>
 	{/if}
 
+	{#if SCREEN.PREVIOUS_GAMES_SCREEN}
+		<PreviousGamesLists games={state.games} {goToHomeScreen} {openGameDetail}/>
+	{/if}
+	
 	{#if POPUP.NEW_PLAYER}
 		<Popup header="Add New Player" onSave={newPlayerSave} onCancel={newPlayerCancel} saveDisabled={!newPlayer.name} showSave showCancel>
 			<!-- <input type="text" class="m-b-10" placeholder="Player Name" on:input={handleNewPlayerName}> -->
@@ -379,29 +492,32 @@
 	{/if}
 	
 	{#if POPUP.ROUND_DETAIL_POPUP}
-		<Popup header="Round Detail" onCancel={closeRoundDetail} showCancel cancelLabel="Close">
+		<Popup header="Round Detail" onSave={editExistingRound} onCancel={closeRoundDetail} showCancel cancelLabel="Close" saveLabel={roundSaveLabel} showSave={currentGame.state === 'In Progress'}>
 			<ul class="add-round">
-				{#each currentGame.players as player , index}
+				{#each currentGame.players as player}
 					<li class="round-player" id={player.id}>
+						
 						<div>
-							<span class="index"> {index+1}. </span> 
 							<label for={player.id}>{player.name}</label>
 						</div>
 						<main class="row">
-							{#if selectedRoundForDetail[player.id] == 0}
-								<Badge text="winner" style="success" animation/>
+							{#if isEditingRound}
+								<div class="row row-end">
+									<input type="number" value={selectedRoundForDetail.scores[player.id]} name={player.id} on:input={updatePlayerExistingScore}>
+								</div>
+								{:else}
+								{#if selectedRoundForDetail.scores[player.id] == 0}
+									<Badge text="winner" style="success" animation/>
+								{/if}
+								<Icon text={selectedRoundForDetail.scores[player.id]} />
 							{/if}
-							<Icon text={selectedRoundForDetail[player.id]} />
 						</main>
+							
 					</li>
 				{/each}
 			</ul>	
 		</Popup>
 	{/if}
-	
-	
-
-	
 </main>
 
 <style>
