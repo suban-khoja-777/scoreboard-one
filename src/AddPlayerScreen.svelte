@@ -31,7 +31,7 @@ export let goToGameScreen;
         <Button text="New" type="primary" onClick={addNewPLayer} /> 
     </main>
     <main class="footer">
-        <Button disabled={players.length < 3} text="Next" type="primary" onClick={goToGameScreen} /> 
+        <Button disabled={players.length < 3} text="Next" type="primary" onClick={ () => goToGameScreen(true)} /> 
     </main>
     
 </main>
