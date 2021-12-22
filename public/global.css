@@ -78,7 +78,12 @@ span.index {
 	color: var(--primary-color);
 	margin-right: 8px;
 	font-weight: 900;
+}
 
+.link{
+	color: var(--primary-color);
+    font-weight: 600;
+    margin: 5px 0;
 }
 
 input[type="text"], button, select, textarea {
@@ -140,6 +145,14 @@ main.footer{
 	justify-content: space-evenly;
 }
 
+.row{
+	display: flex;
+	flex-direction: row;
+}
+
+.row-end{
+	justify-content: flex-end;
+}
 
 
 
