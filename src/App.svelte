@@ -24,7 +24,8 @@
 		NEW_PLAYER : false,
 		EXISTING_PLAYER  : false,
 		ADD_ROUND : false,
-		ROUND_DETAIL_POPUP : false
+		ROUND_DETAIL_POPUP : false,
+		SHARE_ROUND_POPUP : false,
 	}
 
 	const SCREEN = {
@@ -58,32 +59,70 @@
 	let backupOfExistingRound = {};
 	let roundSaveLabel = "Edit";
 	let isEditingRound = false;
+	let isLinkGenerated = false;
+	let generatedLink;
+	let sharableGameId;
+
 
 	onMount(() => {
 		
-		if(!getDb()){
-			updateDb();
-		}
+		sharableGameId = getGameIdFromURL();
 		
-		state = getDb();
+		
 
-		const InProgressGame = state.games.filter(game => game.state === 'In Progress' || game.state === 'Preparing');
-		if(InProgressGame.length){
-			currentGame = InProgressGame[0];
-			if(currentGame.state === 'In Progress'){
-				navigateTo('GAME_STAT_SCREEN');
-			}else{
-				navigateTo('ADD_PLAYER_SCREEN');
-			}
+		if(sharableGameId){
+			fetch(`https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/${sharableGameId}`,{
+				method : 'GET'
+			})
+			.then(res => res.json())
+			.then(res =>{
+				if(res.success){
+					currentGame = JSON.parse(res.data);
+					currentGame.state = 'READONLY';
+					navigateTo('GAME_STAT_SCREEN');
+				}else{
+					alert('Game not found');
+				}
+				
+			})
+			.catch(err => console.log('## err',err))
 		}else{
-			navigateTo('HOME_SCREEN');
+			if(!getDb()){
+				updateDb();
+			}
+			
+			state = getDb();
+
+			const InProgressGame = state.games.filter(game => game.state === 'In Progress' || game.state === 'Preparing');
+			if(InProgressGame.length){
+				currentGame = InProgressGame[0];
+				if(currentGame.state === 'In Progress'){
+					navigateTo('GAME_STAT_SCREEN');
+				}else{
+					navigateTo('ADD_PLAYER_SCREEN');
+				}
+			}else{
+				navigateTo('HOME_SCREEN');
+			}
 		}
 
-		//clearAppData();
-		// state.games = [];
-		// window.localStorage.setItem(APP_NAME,JSON.stringify(state));
+		
 
 	});
+
+	const getGameIdFromURL = () => {
+		let _url = window.location.href;
+		if(_url.indexOf('/game/') > -1){
+			const gameId = _url.split('/ame/')[1];
+			if(gameId.length === 18 && gameId.substring(0,3) === 'a00'){
+				return gameId
+			}else{
+				return null;
+			}
+		}else{
+			return null;
+		}
+	}
 
 	const startNewGame = () => {
         let new_game = {
@@ -280,6 +319,8 @@
 		
 		updateDb();
 		navigateTo('HOME_SCREEN');
+		isLinkGenerated = false;
+		generatedLink = null;
 	}
 
 	const goToRoundDetailScreen = (index) => {
@@ -415,6 +456,34 @@
 		}
 	}
 
+	const shareGame = () => {
+		togglePopup('SHARE_ROUND_POPUP');
+		if(isLinkGenerated) return;
+		fetch('https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/',{
+			method : 'POST',
+			body : JSON.stringify({
+				data : JSON.stringify(currentGame)})
+		})
+		.then(res => res.json())
+		.then(res => {
+			if(res.success){
+				isLinkGenerated = true;
+				generatedLink = `https://scoreboard.onrender.com/game/${res.data}`
+			}
+		})
+		.catch(err => console.log('## err',err))
+	}
+
+	const cancelShare = () => {
+		togglePopup('SHARE_ROUND_POPUP');
+		
+	}
+
+	const copyShareLink = () => {
+		
+		cancelShare();
+	} 
+
 </script>
 
 <main>
@@ -429,7 +498,7 @@
 	{/if}
 
 	{#if SCREEN.GAME_STAT_SCREEN}
-		<GameStatsScreen game={currentGame} {goToAddPlayerScreen} {showPreviousGames} {addNewRound} {completeGame} {goToRoundDetailScreen}/>
+		<GameStatsScreen game={currentGame} {goToAddPlayerScreen} {showPreviousGames} {addNewRound} {completeGame} {goToRoundDetailScreen} {shareGame}/>
 	{/if}
 
 	{#if SCREEN.ROUND_DETAIL_SCREEN}
@@ -516,6 +585,34 @@
 					</li>
 				{/each}
 			</ul>	
+		</Popup>
+	{/if}
+
+	{#if POPUP.SHARE_ROUND_POPUP}
+		<Popup showCancel showSave={isLinkGenerated} saveLabel="Copy" onCancel={cancelShare} onSave={copyShareLink}>
+			<div class="flex space-between m-b-10">
+				{#if !isLinkGenerated}
+					<div class="flex align-center">
+						<div class="inline-block">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40px" height="40px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+								<circle cx="50" cy="50" fill="none" stroke="#42434d" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+									<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+								</circle>
+							</svg>
+						</div>
+						<div class="inline-block">
+							Generating Link...
+						</div>
+					</div>
+					{:else}
+					<div class="flex align-center">
+						<div class="inline-block">
+							<a href="/#" class="link">{generatedLink}</a>
+						</div>
+					</div>
+					
+				{/if}
+			</div>
 		</Popup>
 	{/if}
 </main>
