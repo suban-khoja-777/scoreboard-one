@@ -9,6 +9,7 @@ export let addNewRound;
 export let completeGame;
 export let goToRoundDetailScreen;
 export let showPreviousGames;
+export let shareGame;
 </script>
 
 
@@ -16,11 +17,16 @@ export let showPreviousGames;
     <main class="row">
         <h2> Game Stats </h2>
     </main>
-
+    {#if game.rounds.length}
+        <main class="row">
+            <a href="/#" class="link" on:click={shareGame}>Share</a>
+        </main>
+    {/if}
     <main class="row">
         <Icon text={"Players : "+game.players.length} type="primary"/>
         <Icon text={"Rounds : "+game.rounds.length} type="tertiary" />
     </main>
+    
     <br/>
     <ul>
         {#each game.players as player}
