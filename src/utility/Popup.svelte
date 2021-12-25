@@ -49,7 +49,9 @@
 
 <main class="popup">
     <dialog>
-        <h2>{header}</h2>
+        {#if header}
+            <h2>{header}</h2>
+        {/if}
         <main class="body">
             <slot />
         </main>
