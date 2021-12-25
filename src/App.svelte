@@ -112,8 +112,8 @@
 
 	const getGameIdFromURL = () => {
 		let _url = window.location.href;
-		if(_url.indexOf('/game/') > -1){
-			const gameId = _url.split('/ame/')[1];
+		if(_url.indexOf('?game=') > -1){
+			const gameId = _url.split('?game=')[1];
 			if(gameId.length === 18 && gameId.substring(0,3) === 'a00'){
 				return gameId
 			}else{
@@ -468,7 +468,7 @@
 		.then(res => {
 			if(res.success){
 				isLinkGenerated = true;
-				generatedLink = `https://scoreboard.onrender.com/game/${res.data}`
+				generatedLink = `https://scoreboard.onrender.com?game=${res.data}`
 			}
 		})
 		.catch(err => console.log('## err',err))
