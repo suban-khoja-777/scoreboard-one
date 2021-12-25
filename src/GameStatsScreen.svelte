@@ -8,7 +8,6 @@ export let goToAddPlayerScreen;
 export let addNewRound;
 export let completeGame;
 export let goToRoundDetailScreen;
-export let totalRounds = 0;
 export let showPreviousGames;
 </script>
 
@@ -19,15 +18,8 @@ export let showPreviousGames;
     </main>
 
     <main class="row">
-        {#if game.rounds.length}
-            <Button text={"Players : "+game.players.length} type="primary"/>
-            <Button text="Show Rounds" type="secondary" onClick={goToRoundDetailScreen} />
-            <Button text={"Rounds : "+game.rounds.length} type="primary" />
-            {#if totalRounds}
-                <main>/</main>
-                <Icon text={totalRounds} />    
-            {/if}
-        {/if}
+        <Icon text={"Players : "+game.players.length} type="primary"/>
+        <Icon text={"Rounds : "+game.rounds.length} type="tertiary" />
     </main>
     <br/>
     <ul>
@@ -40,7 +32,6 @@ export let showPreviousGames;
                             {player.name}
                         </span>
                     </main> 
-                    
                 </div>
                 <div class="score">
                     <Icon text={player.score} />
@@ -54,6 +45,7 @@ export let showPreviousGames;
             <Button text="Add Round" type="primary" onClick={addNewRound} />
             {#if game.rounds.length}
                 <Button text="Complete" type="primary" onClick={completeGame} />
+                <Button text="Show Rounds" type="secondary" onClick={goToRoundDetailScreen} />
                 {:else}       
                     <Button text="Previous" type="secondary" onClick={goToAddPlayerScreen} />
             {/if}
