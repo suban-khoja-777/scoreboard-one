@@ -14,6 +14,10 @@
     button.secondary{
         background-color: #27c26c;
     }
+
+    button.tertiary{
+        background-color: var(--black-color);
+    }
     
 </style>
 
