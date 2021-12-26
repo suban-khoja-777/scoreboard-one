@@ -1,28 +1,36 @@
 <script>
     import Button from "./utility/Button.svelte";
-
     export let onNewGame;
     export let showPreviousGames;
     export let showHistory = false;
     export let clearGameHistory;
+    export let sharableGameId;
+    export let isValidGameId;
+    export let gotoHome;
 </script>
 <main>
-  
 
     <div class="illustration">
-        <img class="card spade" src="resource/home.png" alt="home"/>
+        {#if !sharableGameId}
+            <img class="card spade" src="resource/home.png" alt="home"/>
+            {:else if !isValidGameId}
+            <img class="card spade" src="resource/not-found.png" alt="home"/>
+        {/if}
     </div>
     
     <main class="row">
-        <!--<Button onClick={onClear} text="Clear Data" type="secondary" />-->
-        {#if showHistory}
-            <Button onClick={showPreviousGames} text="History" type="secondary" />
+        {#if !sharableGameId}
+            {#if showHistory}
+                <Button onClick={showPreviousGames} text="History" type="secondary" />
+            {/if}
+            <Button onClick={onNewGame} text="New Game" type="primary" />
+            {:else if !isValidGameId}
+            <Button text="Home" type="secondary" onClick={gotoHome} />
         {/if}
-        <Button onClick={onNewGame} text="New Game" type="primary" />
     </main>
 
      <main class="row">
-        {#if showHistory}
+        {#if showHistory && !sharableGameId}
             <a href="/#" class="link" on:click={clearGameHistory}>Clear History</a>
         {/if}
     </main>
