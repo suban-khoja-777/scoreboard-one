@@ -10,14 +10,14 @@ export let completeGame;
 export let goToRoundDetailScreen;
 export let showPreviousGames;
 export let shareGame;
+export let gotoHome;
 </script>
-
 
 <main>
     <main class="row">
         <h2> Game Stats </h2>
     </main>
-    {#if game.rounds.length}
+    {#if game.rounds.length && game.state === 'In Progress'}
         <main class="row">
             <a href="/#" class="link" on:click={shareGame}>Share</a>
         </main>
@@ -55,9 +55,12 @@ export let shareGame;
                 {:else}       
                     <Button text="Previous" type="secondary" onClick={goToAddPlayerScreen} />
             {/if}
+            {:else if game.state === 'READONLY'}
+                <Button text="Home" type="secondary" onClick={gotoHome} />
+                <Button text="Show Rounds" type="secondary" onClick={goToRoundDetailScreen} />
             {:else}
-                <Button text="Previous" type="secondary" onClick={showPreviousGames} />  
-        
+                <Button text="Previous" type="secondary" onClick={showPreviousGames} />
+                <Button text="Show Rounds" type="secondary" onClick={goToRoundDetailScreen} />
         {/if}
     </main>
     
