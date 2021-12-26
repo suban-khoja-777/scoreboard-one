@@ -87,7 +87,7 @@
 				})
 				.catch(err => console.log('## err',err))
 			}else{
-
+				navigateTo('HOME_SCREEN');
 			}
 		}else{
 			if(!getDb()){
