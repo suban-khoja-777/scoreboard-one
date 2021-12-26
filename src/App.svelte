@@ -63,7 +63,7 @@
 	let generatedLink;
 	let sharableGameId;
 	let isValidGameId;
-
+	let generatedGameId;
 
 	onMount(() => {
 		
@@ -276,7 +276,14 @@
 		currentGame = currentGame;
 		state.games = state.games.filter(game => game.id !== currentGame.id);
 		state.games.push(currentGame);
-		
+		if(generatedGameId){
+			fetch('https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/',{
+				method : 'PATCH',
+				body : JSON.stringify({
+					id : generatedGameId,
+					data : JSON.stringify(currentGame)})
+			});
+		}
 		updateDb();
 		togglePopup('ADD_ROUND');
 	}
@@ -319,6 +326,7 @@
 		navigateTo('HOME_SCREEN');
 		isLinkGenerated = false;
 		generatedLink = null;
+		generatedGameId = null;
 	}
 
 	const goToRoundDetailScreen = (index) => {
@@ -466,7 +474,8 @@
 		.then(res => {
 			if(res.success){
 				isLinkGenerated = true;
-				generatedLink = `https://scoreboard.onrender.com?game=${res.data}`
+				generatedGameId = res.data;
+				generatedLink = `${new URL(window.location.href).origin}?game=${res.data}`
 			}
 		})
 		.catch(err => console.log('## err',err))
