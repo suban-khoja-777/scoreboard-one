@@ -67,8 +67,6 @@
 	onMount(() => {
 		
 		sharableGameId = getGameIdFromURL();
-		
-		
 
 		if(sharableGameId){
 			fetch(`https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/${sharableGameId}`,{
@@ -105,9 +103,6 @@
 				navigateTo('HOME_SCREEN');
 			}
 		}
-
-		
-
 	});
 
 	const getGameIdFromURL = () => {
@@ -484,6 +479,11 @@
 		cancelShare();
 	} 
 
+	const gotoHome =() => {
+		const _url = new URL(window.location.href);
+		window.location.href = _url.origin;
+	}
+
 </script>
 
 <main>
@@ -498,7 +498,7 @@
 	{/if}
 
 	{#if SCREEN.GAME_STAT_SCREEN}
-		<GameStatsScreen game={currentGame} {goToAddPlayerScreen} {showPreviousGames} {addNewRound} {completeGame} {goToRoundDetailScreen} {shareGame}/>
+		<GameStatsScreen game={currentGame} {goToAddPlayerScreen} {showPreviousGames} {addNewRound} {completeGame} {goToRoundDetailScreen} {shareGame} {gotoHome}/>
 	{/if}
 
 	{#if SCREEN.ROUND_DETAIL_SCREEN}
