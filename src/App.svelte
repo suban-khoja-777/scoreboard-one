@@ -62,6 +62,7 @@
 	let isLinkGenerated = false;
 	let generatedLink;
 	let sharableGameId;
+	let isValidGameId;
 
 
 	onMount(() => {
@@ -69,21 +70,25 @@
 		sharableGameId = getGameIdFromURL();
 
 		if(sharableGameId){
-			fetch(`https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/${sharableGameId}`,{
+			if(isValidGameId){
+				fetch(`https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/${sharableGameId}`,{
 				method : 'GET'
-			})
-			.then(res => res.json())
-			.then(res =>{
-				if(res.success){
-					currentGame = JSON.parse(res.data);
-					currentGame.state = 'READONLY';
-					navigateTo('GAME_STAT_SCREEN');
-				}else{
-					alert('Game not found');
-				}
-				
-			})
-			.catch(err => console.log('## err',err))
+				})
+				.then(res => res.json())
+				.then(res =>{
+					if(res.success){
+						currentGame = JSON.parse(res.data);
+						currentGame.state = 'READONLY';
+						navigateTo('GAME_STAT_SCREEN');
+					}else{
+						isValidGameId = false;
+						navigateTo('HOME_SCREEN');
+					}
+				})
+				.catch(err => console.log('## err',err))
+			}else{
+
+			}
 		}else{
 			if(!getDb()){
 				updateDb();
@@ -109,12 +114,10 @@
 		let _url = window.location.href;
 		if(_url.indexOf('?game=') > -1){
 			const gameId = _url.split('?game=')[1];
-			if(gameId.length === 18 && gameId.substring(0,3) === 'a00'){
-				return gameId
-			}else{
-				return null;
-			}
+			isValidGameId = (gameId.length === 18 && gameId.substring(0,3) === 'a00');
+			return gameId;
 		}else{
+			isValidGameId = false;
 			return null;
 		}
 	}
@@ -475,8 +478,19 @@
 	}
 
 	const copyShareLink = () => {
-		
-		cancelShare();
+		try{
+			
+			navigator.clipboard.writeText(generatedLink)
+			.then(() => {
+				alert("copied!"); // success 
+				cancelShare();
+			})
+			.catch((err) => {
+				alert("err",err); // error
+			});
+		}catch(exp){
+			alert(exp);
+		}
 	} 
 
 	const gotoHome =() => {
@@ -490,7 +504,7 @@
 	<header>Scoreboard</header>
 	
 	{#if SCREEN.HOME_SCREEN }
-		<StartScreen onNewGame={startNewGame} {showPreviousGames} showHistory={state.games.length} {clearGameHistory}/>
+		<StartScreen onNewGame={startNewGame} {showPreviousGames} showHistory={state.games.length} {clearGameHistory} {gotoHome} {sharableGameId}  {isValidGameId}/>
 	{/if}
 
 	{#if SCREEN.ADD_PLAYER_SCREEN }
@@ -589,7 +603,7 @@
 	{/if}
 
 	{#if POPUP.SHARE_ROUND_POPUP}
-		<Popup showCancel showSave={isLinkGenerated} saveLabel="Copy" onCancel={cancelShare} onSave={copyShareLink}>
+		<Popup showCancel showSave={isLinkGenerated && navigator.clipboard} saveLabel="Copy" onCancel={cancelShare} onSave={copyShareLink}>
 			<div class="flex space-between m-b-10">
 				{#if !isLinkGenerated}
 					<div class="flex align-center">
