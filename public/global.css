@@ -46,6 +46,11 @@ ul{
 	margin: 0 auto 1em auto;
 }
 
+h2{
+	margin: 0.25rem 0;
+}
+
+
 ul.round-list-container{
 	width: 90%;
 	overflow-y: auto;
@@ -63,6 +68,22 @@ header{
 	font-size: 1.25em;
 	/* box-shadow: rgb(0 0 0 / 8%) 0px 0.7rem 2.5rem; */
 	font-weight: 900;
+}
+
+.flex {
+	display: flex;
+}
+
+.align-center{
+	align-items: center;
+}
+
+.inline-block{
+	display: inline-block;
+}
+
+.space-between{
+	justify-content: space-between;
 }
 
 header::first-letter{
