@@ -15,6 +15,7 @@
             <img class="card spade" src="resource/home.png" alt="home"/>
             {:else if !isValidGameId}
             <img class="card spade" src="resource/not-found.png" alt="home"/>
+            <h2>Game Not found!</h2>
         {/if}
     </div>
     
