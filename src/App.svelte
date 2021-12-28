@@ -69,9 +69,12 @@
 	onMount(() => {
 		RTEventHandler = new restdb("61c981ae9b75bf12abba3c32", {realtime: true});
 		
-		RTEventHandler.on('NEW_ROUND', function(err, mess) {
-			console.log('err ',err);
-			console.log('mess ',mess);
+		RTEventHandler.on('NEW_ROUND', function(err, game) {
+			if(err) return;
+			if(game && game.data && sharableGameId){
+				currentGame = game.data;
+				currentGame = currentGame;
+			}
     	});
 		
 		sharableGameId = getGameIdFromURL();
