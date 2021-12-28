@@ -4,7 +4,7 @@ const API = {
 
 const headers = {
     "Content-Type" : "application/json",
-    "x-apikey" : "2b4d31a50afac7bd0ad3709a718a311169801"
+    "x-apikey" : "61c981ae9b75bf12abba3c32"
 }
 
 export const createGame = (currentGame) => {
