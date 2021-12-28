@@ -74,7 +74,7 @@
 				getGame(sharableGameId)
 				.then(res =>{
 					if(res._id){
-						currentGame = JSON.parse(res);
+						currentGame = res;
 						currentGame.state = 'READONLY';
 						navigateTo('GAME_STAT_SCREEN');
 					}else{
@@ -498,9 +498,7 @@
 
 <main>
 	
-	<header>Scoreboard 
-		<span style="padding: 0.15em;background-color: var(--primary-color);color: var(--white-color);border-radius: 3px;">beta - v1</span>
-	</header>
+	<header>Scoreboard </header>
 
 	{#if SCREEN.HOME_SCREEN }
 		<StartScreen onNewGame={startNewGame} {showPreviousGames} showHistory={state.games.length} {clearGameHistory} {gotoHome} {sharableGameId}  {isValidGameId}/>
