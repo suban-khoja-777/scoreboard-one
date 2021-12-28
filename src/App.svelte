@@ -26,6 +26,7 @@
 		ADD_ROUND : false,
 		ROUND_DETAIL_POPUP : false,
 		SHARE_ROUND_POPUP : false,
+		SPINNER_POPUP : false
 	}
 
 	const SCREEN = {
@@ -71,13 +72,16 @@
 
 		if(sharableGameId){
 			if(isValidGameId){
+				togglePopup('SPINNER_POPUP');
 				getGame(sharableGameId)
 				.then(res =>{
 					if(res.success){
+						togglePopup('SPINNER_POPUP');
 						currentGame = JSON.parse(res.data);
 						currentGame.state = 'READONLY';
 						navigateTo('GAME_STAT_SCREEN');
 					}else{
+						togglePopup('SPINNER_POPUP');
 						isValidGameId = false;
 						navigateTo('HOME_SCREEN');
 					}
@@ -622,6 +626,23 @@
 					</div>
 					
 				{/if}
+			</div>
+		</Popup>
+	{/if}
+	
+	{#if POPUP.SPINNER_POPUP}
+		<Popup>
+			<div class="flex align-center">
+				<div class="inline-block m-r-5">
+					<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40px" height="40px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+						<circle cx="50" cy="50" fill="none" stroke="#42434d" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+							<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+						</circle>
+					</svg>
+				</div>
+				<div class="inline-block">
+					Getting Game Details...
+				</div>
 			</div>
 		</Popup>
 	{/if}
