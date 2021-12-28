@@ -497,9 +497,7 @@
 </script>
 
 <main>
-	<header>Scoreboard 
-		<span style="padding: 0.15em;background-color: var(--primary-color);color: var(--white-color);border-radius: 3px;">beta</span>
-	</header>
+	<header>Scoreboard </header>
 	
 	{#if SCREEN.HOME_SCREEN }
 		<StartScreen onNewGame={startNewGame} {showPreviousGames} showHistory={state.games.length} {clearGameHistory} {gotoHome} {sharableGameId}  {isValidGameId}/>
