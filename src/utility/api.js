@@ -17,7 +17,7 @@ export const createGame = (currentGame) => {
 }
 
 export const getGame = (sharableGameId) => {
-    return fetch(API.endpoint+'/'+sharableGameId,{
+    return fetch(API.endpoint,{
         method : 'GET',
         headers
     })
