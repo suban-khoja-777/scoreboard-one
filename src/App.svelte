@@ -499,7 +499,7 @@
 <main>
 	
 	<header>Scoreboard 
-		<span style="padding: 0.15em;background-color: var(--primary-color);color: var(--white-color);border-radius: 3px;">beta - restDB</span>
+		<span style="padding: 0.15em;background-color: var(--primary-color);color: var(--white-color);border-radius: 3px;">beta - v1</span>
 	</header>
 
 	{#if SCREEN.HOME_SCREEN }
