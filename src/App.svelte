@@ -65,8 +65,14 @@
 	let sharableGameId;
 	let isValidGameId;
 	let generatedGameId;
-
+	let RTEventHandler;
 	onMount(() => {
+		RTEventHandler = new restdb("61c981ae9b75bf12abba3c32", {realtime: true});
+		
+		RTEventHandler.on('NEW_ROUND', function(err, mess) {
+			console.log('err ',err);
+			console.log('mess ',mess);
+    	});
 		
 		sharableGameId = getGameIdFromURL();
 
@@ -277,8 +283,13 @@
 		currentGame = currentGame;
 		state.games = state.games.filter(game => game.id !== currentGame.id);
 		state.games.push(currentGame);
+		
 		if(generatedGameId){
 			updateGame(generatedGameId,currentGame);
+			RTEventHandler.publish("NEW_ROUND", currentGame, function(error, result){
+				console.log('error ',error);
+				console.log('result ',result);
+    		})
 		}
 		updateDb();
 		togglePopup('ADD_ROUND');
