@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 
 	import {generatePlayerId , generateGameId , getDateTimeAsString,generateRoundId} from './utility/Utility';
-
+	import {createGame,getGame,updateGame} from './utility/api';
 	import Popup from './utility/Popup.svelte';
 	import Icon from "./utility/Icon.svelte";
 	import Badge from './utility/Badge.svelte';
@@ -71,10 +71,7 @@
 
 		if(sharableGameId){
 			if(isValidGameId){
-				fetch(`https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/${sharableGameId}`,{
-				method : 'GET'
-				})
-				.then(res => res.json())
+				getGame(sharableGameId)
 				.then(res =>{
 					if(res.success){
 						currentGame = JSON.parse(res.data);
@@ -277,12 +274,7 @@
 		state.games = state.games.filter(game => game.id !== currentGame.id);
 		state.games.push(currentGame);
 		if(generatedGameId){
-			fetch('https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/',{
-				method : 'PATCH',
-				body : JSON.stringify({
-					id : generatedGameId,
-					data : JSON.stringify(currentGame)})
-			});
+			updateGame(generatedGameId,currentGame);
 		}
 		updateDb();
 		togglePopup('ADD_ROUND');
@@ -465,12 +457,7 @@
 	const shareGame = () => {
 		togglePopup('SHARE_ROUND_POPUP');
 		if(isLinkGenerated) return;
-		fetch('https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/game/',{
-			method : 'POST',
-			body : JSON.stringify({
-				data : JSON.stringify(currentGame)})
-		})
-		.then(res => res.json())
+		createGame(currentGame)
 		.then(res => {
 			if(res.success){
 				isLinkGenerated = true;
