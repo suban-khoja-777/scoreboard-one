@@ -73,8 +73,8 @@
 			if(isValidGameId){
 				getGame(sharableGameId)
 				.then(res =>{
-					if(res.success){
-						currentGame = JSON.parse(res.data);
+					if(res._id){
+						currentGame = JSON.parse(res);
 						currentGame.state = 'READONLY';
 						navigateTo('GAME_STAT_SCREEN');
 					}else{
@@ -459,7 +459,7 @@
 		if(isLinkGenerated) return;
 		createGame(currentGame)
 		.then(res => {
-			if(res.success){
+			if(res._id){
 				isLinkGenerated = true;
 				generatedGameId = res._id;
 				generatedLink = `${new URL(window.location.href).origin}?game=${res._id}`
