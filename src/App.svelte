@@ -461,8 +461,8 @@
 		.then(res => {
 			if(res.success){
 				isLinkGenerated = true;
-				generatedGameId = res.data;
-				generatedLink = `${new URL(window.location.href).origin}?game=${res.data}`
+				generatedGameId = res._id;
+				generatedLink = `${new URL(window.location.href).origin}?game=${res._id}`
 			}
 		})
 		.catch(err => console.log('## err',err))
