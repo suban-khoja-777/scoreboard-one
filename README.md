@@ -1,2 +1,2 @@
 
-in this versoion sharae game functionality is addded using Salesforce as a Service
+in this versoion sharae game functionality is addded using RestDB as a Service
