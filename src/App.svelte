@@ -111,7 +111,7 @@
 		let _url = window.location.href;
 		if(_url.indexOf('?game=') > -1){
 			const gameId = _url.split('?game=')[1];
-			isValidGameId = (gameId.length === 18 && gameId.substring(0,3) === 'a00');
+			isValidGameId = true;
 			return gameId;
 		}else{
 			isValidGameId = false;
