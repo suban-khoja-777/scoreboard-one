@@ -57,7 +57,14 @@ export default {
 			dedupe: ['svelte']
 		}),
 		commonjs(),
-
+		replace({
+			// 2 level deep object should be stringify
+			process: JSON.stringify({
+			  env: {
+				isProd: production,
+			  }
+			}),
+		  }),
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
 		!production && serve(),
