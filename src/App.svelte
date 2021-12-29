@@ -65,8 +65,19 @@
 	let sharableGameId;
 	let isValidGameId;
 	let generatedGameId;
-
+	let RTEventHandler;
 	onMount(() => {
+		console.log('__API_KEY__');
+		console.log('__API_KEY__',process.env.__API_KEY__);
+		RTEventHandler = new restdb("61c981ae9b75bf12abba3c32", {realtime: true});
+		
+		RTEventHandler.on('NEW_ROUND', function(err, game) {
+			if(err) return;
+			if(game && game.data && sharableGameId){
+				currentGame = game.data;
+				currentGame = currentGame;
+			}
+    	});
 		
 		sharableGameId = getGameIdFromURL();
 
@@ -75,9 +86,9 @@
 				togglePopup('SPINNER_POPUP');
 				getGame(sharableGameId)
 				.then(res =>{
-					if(res.success){
+					if(res._id){
 						togglePopup('SPINNER_POPUP');
-						currentGame = JSON.parse(res.data);
+						currentGame = res;
 						currentGame.state = 'READONLY';
 						navigateTo('GAME_STAT_SCREEN');
 					}else{
@@ -96,6 +107,7 @@
 			//@@TODO Validate Link based on Regex.
 			if(shareLink){
 				isLinkGenerated = true;
+				//@@TODO USE URL Object for getting parameter
 				generatedGameId = shareLink.searchParams.get('game');
 				generatedLink = shareLink;
 			}
@@ -123,9 +135,9 @@
 
 	const getGameIdFromURL = () => {
 		let _url = new URL(window.location.href);
-		if(_url.searchParams.get('game')){	
+		if(_url.searchParams.get('game')){
 			const gameId = _url.searchParams.get('game');
-			isValidGameId = (gameId.length === 18 && gameId.substring(0,3) === 'a00');
+			isValidGameId = true;
 			return gameId;
 		}else{
 			isValidGameId = false;
@@ -287,8 +299,13 @@
 		currentGame = currentGame;
 		state.games = state.games.filter(game => game.id !== currentGame.id);
 		state.games.push(currentGame);
+		
 		if(generatedGameId){
 			updateGame(generatedGameId,currentGame);
+			RTEventHandler.publish("NEW_ROUND", currentGame, function(error, result){
+				console.log('error ',error);
+				console.log('result ',result);
+    		})
 		}
 		updateDb();
 		togglePopup('ADD_ROUND');
@@ -473,12 +490,12 @@
 		if(isLinkGenerated) return;
 		createGame(currentGame)
 		.then(res => {
-			if(res.success){
+			if(res._id){
 				isLinkGenerated = true;
-				generatedGameId = res.data;
-				let _url = new URL(window.location.href);	
-				_url.searchParams.set('game',generatedGameId);	
-				generatedLink = _url.href;	
+				generatedGameId = res._id;
+				let _url = new URL(window.location.href);
+				_url.searchParams.set('game',generatedGameId);
+				generatedLink = _url.href;
 				window.localStorage.setItem('SCOREBOARD_APP_SHARE_LINK',generatedLink);
 			}
 		})
@@ -487,12 +504,10 @@
 
 	const cancelShare = () => {
 		togglePopup('SHARE_ROUND_POPUP');
-		
 	}
 
 	const copyShareLink = () => {
 		try{
-			
 			navigator.clipboard.writeText(generatedLink)
 			.then(() => {
 				alert("copied!"); // success 
@@ -514,8 +529,9 @@
 </script>
 
 <main>
-	<header>Scoreboard </header>
 	
+	<header>Scoreboard </header>
+
 	{#if SCREEN.HOME_SCREEN }
 		<StartScreen onNewGame={startNewGame} {showPreviousGames} showHistory={state.games.length} {clearGameHistory} {gotoHome} {sharableGameId}  {isValidGameId}/>
 	{/if}
@@ -642,7 +658,7 @@
 			</div>
 		</Popup>
 	{/if}
-	
+
 	{#if POPUP.SPINNER_POPUP}
 		<Popup>
 			<div class="flex align-center">
