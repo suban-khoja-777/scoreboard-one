@@ -68,7 +68,7 @@
 	let RTEventHandler;
 	onMount(() => {
 		RTEventHandler = new restdb("61c981ae9b75bf12abba3c32", {realtime: true});
-		
+		console.log('__30-12-2021__');
 		RTEventHandler.on('NEW_ROUND', function(err, game) {
 			if(err) return;
 			if(game && game.data && sharableGameId){
