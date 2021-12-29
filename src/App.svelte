@@ -67,6 +67,7 @@
 	let generatedGameId;
 	let RTEventHandler;
 	onMount(() => {
+
 		RTEventHandler = new restdb("61c981ae9b75bf12abba3c32", {realtime: true});
 		
 		RTEventHandler.on('NEW_ROUND', function(err, game) {
@@ -100,6 +101,17 @@
 				navigateTo('HOME_SCREEN');
 			}
 		}else{
+			//check if game is already shared.
+			const shareLink = window.localStorage.getItem('SCOREBOARD_APP_SHARE_LINK');
+			//@@TODO Validate Link based on Regex.
+			if(shareLink){
+				isLinkGenerated = true;
+				//@@TODO USE URL Object for getting parameter
+				generatedGameId = shareLink.searchParams.get('game');
+				generatedLink = shareLink;
+			}
+			
+
 			if(!getDb()){
 				updateDb();
 			}
@@ -121,9 +133,9 @@
 	});
 
 	const getGameIdFromURL = () => {
-		let _url = window.location.href;
-		if(_url.indexOf('?game=') > -1){
-			const gameId = _url.split('?game=')[1];
+		let _url = new URL(window.location.href);
+		if(_url.searchParams.get('game')){
+			const gameId = _url.searchParams.get('game');
 			isValidGameId = true;
 			return gameId;
 		}else{
@@ -480,7 +492,10 @@
 			if(res._id){
 				isLinkGenerated = true;
 				generatedGameId = res._id;
-				generatedLink = `${new URL(window.location.href).origin}?game=${res._id}`
+				let _url = new URL(window.location.href);
+				_url.searchParams.set('game',generatedGameId);
+				generatedLink = _url.href;
+				window.localStorage.setItem('SCOREBOARD_APP_SHARE_LINK',generatedLink);
 			}
 		})
 		.catch(err => console.log('## err',err))
@@ -488,12 +503,10 @@
 
 	const cancelShare = () => {
 		togglePopup('SHARE_ROUND_POPUP');
-		
 	}
 
 	const copyShareLink = () => {
 		try{
-			
 			navigator.clipboard.writeText(generatedLink)
 			.then(() => {
 				alert("copied!"); // success 
