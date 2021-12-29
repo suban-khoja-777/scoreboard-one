@@ -91,6 +91,16 @@
 				navigateTo('HOME_SCREEN');
 			}
 		}else{
+			//check if game is already shared.
+			const shareLink = window.localStorage.getItem('SCOREBOARD_APP_SHARE_LINK');
+			//@@TODO Validate Link based on Regex.
+			if(shareLink){
+				isLinkGenerated = true;
+				generatedGameId = shareLink.searchParams.get('game');
+				generatedLink = shareLink;
+			}
+			
+
 			if(!getDb()){
 				updateDb();
 			}
@@ -112,9 +122,9 @@
 	});
 
 	const getGameIdFromURL = () => {
-		let _url = window.location.href;
-		if(_url.indexOf('?game=') > -1){
-			const gameId = _url.split('?game=')[1];
+		let _url = new URL(window.location.href);
+		if(_url.searchParams.get('game')){	
+			const gameId = _url.searchParams.get('game');
 			isValidGameId = (gameId.length === 18 && gameId.substring(0,3) === 'a00');
 			return gameId;
 		}else{
@@ -466,7 +476,10 @@
 			if(res.success){
 				isLinkGenerated = true;
 				generatedGameId = res.data;
-				generatedLink = `${new URL(window.location.href).origin}?game=${res.data}`
+				let _url = new URL(window.location.href);	
+				_url.searchParams.set('game',generatedGameId);	
+				generatedLink = _url.href;	
+				window.localStorage.setItem('SCOREBOARD_APP_SHARE_LINK',generatedLink);
 			}
 		})
 		.catch(err => console.log('## err',err))
