@@ -67,7 +67,7 @@
 	let generatedGameId;
 
 	onMount(() => {
-		
+		console.log('__30-12-2021__')
 		sharableGameId = getGameIdFromURL();
 
 		if(sharableGameId){
