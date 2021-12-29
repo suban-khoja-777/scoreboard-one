@@ -96,7 +96,7 @@
 			//@@TODO Validate Link based on Regex.
 			if(shareLink){
 				isLinkGenerated = true;
-				generatedGameId = shareLink.searchParams.get('game');
+				generatedGameId = new URL(shareLink).searchParams.get('game');
 				generatedLink = shareLink;
 			}
 			
