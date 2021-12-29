@@ -67,8 +67,6 @@
 	let generatedGameId;
 	let RTEventHandler;
 	onMount(() => {
-		console.log('__API_KEY__');
-		console.log('__API_KEY__',process.env.__API_KEY__);
 		RTEventHandler = new restdb("61c981ae9b75bf12abba3c32", {realtime: true});
 		
 		RTEventHandler.on('NEW_ROUND', function(err, game) {
@@ -108,7 +106,7 @@
 			if(shareLink){
 				isLinkGenerated = true;
 				//@@TODO USE URL Object for getting parameter
-				generatedGameId = shareLink.searchParams.get('game');
+				generatedGameId = new URL(shareLink).searchParams.get('game');
 				generatedLink = shareLink;
 			}
 			
