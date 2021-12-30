@@ -68,7 +68,7 @@
 	let RTEventHandler;
 	onMount(() => {
 		RTEventHandler = new restdb("61c981ae9b75bf12abba3c32", {realtime: true});
-		console.log('__30-12-2021__');
+		
 		RTEventHandler.on('NEW_ROUND', function(err, game) {
 			if(err) return;
 			if(game && game.data && sharableGameId){
@@ -183,6 +183,10 @@
 	const newPlayerSave = () => {
 
 		if(newPlayer.name){
+			if(currentGame.players.filter(player => player.name.toLocaleLowerCase() === newPlayer.name.toLocaleLowerCase()).length || state.players.filter(player => player.name.toLocaleLowerCase() === newPlayer.name.toLocaleLowerCase()).length){
+				alert(`Player with the name ${newPlayer.name} already exist.`);
+				return;
+			}
 			newPlayer.id = generatePlayerId();
 			
 			if(newPlayer.saveForFuture){
