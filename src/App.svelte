@@ -73,6 +73,7 @@
 			if(err) return;
 			if(game && game.data && sharableGameId){
 				currentGame = game.data;
+				currentGame.state = 'READONLY';
 				currentGame = currentGame;
 			}
     	});
