@@ -173,6 +173,10 @@
 	const newPlayerSave = () => {
 
 		if(newPlayer.name){
+			if(currentGame.players.filter(player => player.name.toLocaleLowerCase() === newPlayer.name.toLocaleLowerCase()).length || state.players.filter(player => player.name.toLocaleLowerCase() === newPlayer.name.toLocaleLowerCase()).length){
+				alert(`Player with the name ${newPlayer.name} already exist.`);
+				return;
+			}
 			newPlayer.id = generatePlayerId();
 			
 			if(newPlayer.saveForFuture){
