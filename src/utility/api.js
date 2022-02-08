@@ -33,10 +33,10 @@ export const updateGame = (generatedGameId,currentGame) => {
     });
 }
 
-export const newGame = () => {
+export const newGame = (data) => {
     fetch(API.analytics_endpoint,{
         method : 'POST',
         headers,
-        body : JSON.stringify({})
+        body : JSON.stringify({data})
     });
 }
