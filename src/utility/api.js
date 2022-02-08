@@ -1,5 +1,6 @@
 const API = {
-    endpoint : 'https://scoreboard1-ed8d.restdb.io/rest/game'
+    endpoint : 'https://scoreboard1-ed8d.restdb.io/rest/game',
+    analytics_endpoint : 'https://scoreboard-v1-developer-edition.ap27.force.com/api/services/apexrest/analytics'
 };
 
 const headers = {
@@ -29,5 +30,13 @@ export const updateGame = (generatedGameId,currentGame) => {
         method : 'PATCH',
         headers,
         body : JSON.stringify(currentGame)
+    });
+}
+
+export const newGame = () => {
+    fetch(API.analytics_endpoint,{
+        method : 'POST',
+        headers,
+        body : JSON.stringify({})
     });
 }
