@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 
 	import {generatePlayerId , generateGameId , getDateTimeAsString,generateRoundId} from './utility/Utility';
-	import {createGame,getGame,updateGame} from './utility/api';
+	import {createGame,getGame,updateGame,newGame} from './utility/api';
 	import Popup from './utility/Popup.svelte';
 	import Icon from "./utility/Icon.svelte";
 	import Badge from './utility/Badge.svelte';
@@ -153,6 +153,7 @@
             rounds : []
         }
 		currentGame = new_game;
+		newGame(new_game);
         state.games.push(new_game);
 		state = state;
         updateDb();
